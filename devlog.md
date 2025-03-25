@@ -24,6 +24,15 @@
 * Thread naming for debugging purposes considered.
 * Potential bug: Customer exits without service; semaphore signaling needs review.
 
+**During Coding Notes (random thoughts + live log):**
+
+* Okay, forgot how annoying semaphores can be—spent 15 minutes realizing I had initialized one with the wrong value.
+* Threads are spawning but feels like a chaotic mess. Gonna need to print logs with thread IDs so I know who's doing what.
+* Tellers are just chilling… waiting on customers who haven’t been released yet. Think I need a queue or at least a signal mechanism.
+* Considering using a manager thread to simulate opening the bank and controlling flow—it might make coordination easier.
+* Wondering if I should name my threads for easier debugging—like “Teller-1” or “Customer-3.”
+* Possible bug: sometimes it looks like a customer exits without being served. I think the semaphore signaling isn't aligned right. Might have to introduce a waiting room or condition variable.
+
 
 **2025-03-24 11:55 PM**
 
@@ -49,3 +58,103 @@
 * Fine-tune semaphore handling to prevent edge cases.
 * Implement Customer timeouts or max-wait logic.
 * Clean up code and consolidate logic into functions.
+
+
+**2025-03-25 8:11 AM**
+
+**Goal:** Add concurrency logic and print statements for Customer and Teller interaction.
+* Realized I was getting ahead of myself in session 1 trying to do concurrency logic then. Decided to hold it off till this commit and go for just a simple skeleton code for that commit. 
+* Added a simple print statement to see if the teller is working correctly for commit 1. But devlog says otherwise. 
+
+**Initial Goal That I Had in Mind:** Set up the initial structure for the bank simulator project. Got ahead and tried moving too quick, but just did simple.
+
+**Thoughts:**
+    * Conceptualizing a bank simulation with concurrent Customers and Tellers.
+    * Planning to utilize semaphores for synchronization and resource management.
+    * Focusing on establishing the project skeleton, deferring complex behavior and edge cases.
+    * Considering the inclusion of simulated resources like a safe or vault, and the level of transaction detail.
+
+**Plan:**
+    * Establish global data structures and include necessary libraries.
+    * Create placeholder thread functions for Tellers and Customers.
+    * Define enums, constants, and initial shared variables.
+    * Outline the high-level program flow for future logic implementation.
+    * Maintain code organization with comments indicating areas for future development.
+
+**Progress:**
+    * Created function stubs for Teller and Customer threads.
+    * Set up the basic main structure with initialization and placeholder thread creation.
+    * Added initial global variables and outlined the placement of semaphores and mutexes.
+    * Included comments to guide future steps, particularly regarding concurrency and resource access.
+
+**Session End of First Commit**
+
+**Session Summary:** Project skeleton created with key components outlined and ready for implementation.
+
+**Reflection:**
+    * Satisfied with the established base, which should facilitate smoother concurrency logic implementation in the next session.
+    * No bugs or significant roadblocks encountered during setup.
+    * The next session will involve implementing actual logic, including semaphore initialization, thread communication, and Teller-Customer interaction.
+    * Thinking about a manager thread for future flow control.
+
+**Next Session Goals:**
+    * Implement thread logic and concurrency using semaphores and mutexes.
+    * Simulate basic Customer entry, service, and exit flow.
+    * Establish a structure for managing limited resources (e.g., safe, teller availability).
+    * Begin planning logging and output format for thread behavior tracing.
+
+**Actual Session Start 2025-03-25 01:00 PM**
+
+**Thoughts:**
+    * Ready to move beyond placeholders want Customers and Tellers to actually "do something."
+    * Thinking about using a queue or signaling system so Tellers can serve Customers in order
+    * Debating how much to simulate—right now, print-based feedback seems easiest to trace
+    * Want to make sure I can actually visualize what's happening in the threads—logging is key
+
+**Plan:**
+    * Set up semaphores to control access and coordination between Customers and Tellers
+    * Implement thread logic for Tellers to wait for Customers
+    * Create simulation where Customers can request a service (deposit/withdraw)
+    * Add logging to reflect entry, service, and exit events.
+    * Ensure threads are not interfering with each other—introduce mutexes where needed.
+
+**Progress:**
+    * Implemented semaphores for coordination; adjusted their initial values a few times.
+    * Basic thread logic works—Customers arrive, Tellers respond.
+    * Added random sleep durations to simulate realistic service time.
+    * Ran into a race condition where Tellers helped the same Customer—added mutexes to resolve.
+    * Created unique logging output so it's easier to follow which Customer is being served by which Teller.
+
+**During Coding Notes (random thoughts + live log):**
+    * Tellers now wait on a semaphore and respond when a Customer is ready—finally feels like a real simulation
+    * Thought about adding thread names like "Teller-1" or "Customer-2" and it’s helping a lot with print debugging.
+    * Mutex helped solve the double-helping issue. Didn’t realize two Tellers could pick the same Customer so easily
+    * Tempted to rewrite a lot already, but trying to get something functional first.
+    * The current log output looks like a little story—unexpectedly fun to watch it play out
+    * Accidentally had a Customer exit before being served—added a "wait-for-service" semaphore for proper sequencing.
+
+**2025-03-25 06:30 PM - Session End**
+
+**Session Summary:** Basic concurrency flow between Customers and Tellers implemented using semaphores and threads
+
+**Reflection:**
+    * Tellers now properly wait and serve incoming Customers.
+    * Print logs show synchronized flow of activity; easy to trace
+    * Still early, but it’s already highlighting how tricky thread sync can be
+    * Mutexes and semaphores are working together—though the logic isn’t very clean yet
+
+**Bugs Encountered:**
+    * Double-service by Tellers due to lack of synchronization—fixed with mutex
+    * Semaphore misinitialization led to Customers entering but no Teller response.
+    * Random delays helped visualize the concurrency better but also introduced timing inconsistencies I had to account for.
+
+**Remaining Tasks:**
+    * Code needs some structural cleanup—too much is in main right now.
+    * Add a manager or controller thread to handle flow (eg opening/closing the bank)
+    * Improve handling of corner cases, like no Tellers available or Customer timeout scenarios
+
+**Next Session Goals:**
+    * Abstract logic into cleaner functions for readability
+    * Add a Manager thread to better control bank behavior and flow.
+    * Possibly simulate a maximum wait time for Customers
+    * Begin thinking about final formatting of output and structure.
