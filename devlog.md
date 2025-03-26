@@ -158,3 +158,27 @@
     * Add a Manager thread to better control bank behavior and flow.
     * Possibly simulate a maximum wait time for Customers
     * Begin thinking about final formatting of output and structure.
+
+**2025-03-26 10:00 AM - Session Start**
+
+**Goal:** Final polish—improve comments and output formatting for clarity and submission readiness.
+
+**Thoughts:**
+    * Core concurrency logic is stable and functioning correctly.
+    * Stable runs show proper customer flow: enter, serve, leave.
+    * Focus on cleanup and formatting, no structural changes required.
+    * Aim to enhance print statement readability for potential grader expectations.
+
+**Plan:**
+    * Review and comment each code section, particularly thread logic and synchronization.
+    * Standardize print messages for clearer thread activity understanding.
+    * Execute final test cases to ensure consistency and expected behavior.
+    * Verify output reflects all major steps: arrival, waiting, service, departure.
+    * Remove unused variables, test code, and debug print statements.
+
+**Progress:**
+    * Reworded print statements for clarity (e.g., "Customer 1 enters the bank").
+    * Added concise comments above major code blocks, especially thread functions.
+    * Verified correct semaphore initialization and destruction.
+    * Final test runs produced clean, ordered logs without race conditions.
+    * Retained thread IDs and role names (e.g., "Teller-2") for easy tracking.
