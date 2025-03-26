@@ -182,3 +182,33 @@
     * Verified correct semaphore initialization and destruction.
     * Final test runs produced clean, ordered logs without race conditions.
     * Retained thread IDs and role names (e.g., "Teller-2") for easy tracking.
+
+**During Coding Notes (random thoughts + live log):**
+    * Okay, final stretch—just cleaning things up.
+    * First thing I noticed: some of my print statements feel robotic. Rewriting them to feel more natural/readable.
+    * “Customer enters the bank” vs “Customer X has entered” — going with the second one, it just flows better
+    * Saw a couple comments that just say // TODO… yeah, not doing those anymore. Deleting
+    * Realized I had three different variations of the word “serving” in my print logs—standardizing that
+    * Should probably add a quick comment before each semaphore declaration just in case someone else reads this.
+    * This code is surprisingly readable considering it started as chaos lol.
+    * Every time I test the output, it feels like a little play—Tellers popping up, Customers flowing through
+    * Tempted to add some extra spacing to make the output look nicer… okay fine, added a few \ns
+    * Added a small debug log toggle—just commented it out for now, but nice to have in case I want to trace it deeper.
+    * Code compiles, prints look good, no weird overlaps—nice.
+    * Removed that random printf("debug\n"); from line 78 that I forgot about
+    * Okay, pretty sure I’m done now... going to run it one more time just for peace of mind.
+    * Final test run looks great output is clean, no errors.
+
+**2025-03-27 5:00 PM - Session End**
+
+**Session Summary:** Completed final polishing of code and output formatting. Ready for submission.
+
+**Reflection:**
+    * Code structure is clear, output is readable, and comments are concise.
+    * Confident the program demonstrates intended concurrency behavior with semaphores and threads.
+    * No unexpected issues encountered, focused on quality-of-life improvements.
+    * Satisfied with the outcome; potential for future enhancements (timeouts, GUI, complex logic).
+
+**Next Steps (Post-Submission Thoughts):**
+    * Project completion for now.
+    * Future enhancements could include thread flow visualization with timestamps or customer impatience simulation.

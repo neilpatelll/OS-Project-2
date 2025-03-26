@@ -1,7 +1,3 @@
-# ===========================
-# Commit #2: Concurrency Logic
-# ===========================
-
 import threading
 import random
 import time
@@ -43,7 +39,7 @@ def teller_thread(tid):
     with tellers_ready_lock:
         tellers_ready_count += 1
         if tellers_ready_count == NUM_TELLERS:
-            bank_open_event.set()
+            bank_open_event.set()  # Open bank when all Tellers are ready
 
     while True:
         with served_lock:
@@ -53,6 +49,7 @@ def teller_thread(tid):
                     queue_cv.notify_all()
                 break
 
+        # Pull next customer from the queue
         with queue_cv:
             while not customer_queue and not simulation_done:
                 queue_cv.wait()
@@ -69,12 +66,15 @@ def teller_thread(tid):
         print(f"Teller {tid} [Customer {cust_id}]: serving a customer")
         sem_customer[cust_id].release()
 
+        # Wait for customer approach
         sem_teller[cust_id].acquire()
         print(f"Teller {tid} [Customer {cust_id}]: asks for transaction")
         sem_customer[cust_id].release()
 
+        # Teller receives transaction
         sem_teller[cust_id].acquire()
         txn_type = transactions[cust_id]
+
         if txn_type == "Withdraw":
             print(f"Teller {tid} [Customer {cust_id}]: handling withdrawal transaction")
             print(f"Teller {tid} [Customer {cust_id}]: going to the manager")
@@ -86,6 +86,7 @@ def teller_thread(tid):
         else:
             print(f"Teller {tid} [Customer {cust_id}]: handling deposit transaction")
 
+        # Go to safe
         print(f"Teller {tid} [Customer {cust_id}]: going to safe")
         print(f"Teller {tid} [Customer {cust_id}]: enter safe")
         safe_sem.acquire()
@@ -93,6 +94,7 @@ def teller_thread(tid):
         print(f"Teller {tid} [Customer {cust_id}]: leaving safe")
         safe_sem.release()
 
+        # Finish up
         if txn_type == "Withdraw":
             print(f"Teller {tid} [Customer {cust_id}]: finishes withdrawal transaction.")
         else:
@@ -101,8 +103,10 @@ def teller_thread(tid):
         print(f"Teller {tid} [Customer {cust_id}]: wait for customer to leave.")
         sem_customer[cust_id].release()
 
+        # Wait for the customer to confirm they're gone
         sem_teller[cust_id].acquire()
 
+        # One more served
         with served_lock:
             customers_served += 1
             if customers_served >= NUM_CUSTOMERS:
@@ -117,9 +121,9 @@ def teller_thread(tid):
     print(f"Teller {tid} []: leaving for the day")
 
 def customer_thread(cid):
+    # Decide deposit or withdrawal
     txn_type = random.choice(["Deposit", "Withdraw"])
     transactions[cid] = txn_type
-
     if txn_type == "Deposit":
         print(f"Customer {cid} []: wants to perform a deposit transaction")
     else:
@@ -128,7 +132,8 @@ def customer_thread(cid):
     random_sleep(0, 100)
 
     print(f"Customer {cid} []: going to bank.")
-    bank_open_event.wait()
+    bank_open_event.wait()  # Wait for Tellers to be ready
+
     print(f"Customer {cid} []: entering bank.")
     door_sem.acquire()
 
@@ -138,26 +143,27 @@ def customer_thread(cid):
         queue_cv.notify()
 
     sem_customer[cid].acquire()
-    teller_id = assigned_teller[cid]
+    tid = assigned_teller[cid]
     print(f"Customer {cid} []: selecting a teller.")
-    print(f"Customer {cid} [Teller {teller_id}]: selects teller")
+    print(f"Customer {cid} [Teller {tid}]: selects teller")
 
-    print(f"Customer {cid} [Teller {teller_id}] introduces itself")
+    # Introduce self
+    print(f"Customer {cid} [Teller {tid}] introduces itself")
     sem_teller[cid].release()
 
     sem_customer[cid].acquire()
     if txn_type == "Withdraw":
-        print(f"Customer {cid} [Teller {teller_id}]: asks for withdrawal transaction")
+        print(f"Customer {cid} [Teller {tid}]: asks for withdrawal transaction")
     else:
-        print(f"Customer {cid} [Teller {teller_id}]: asks for deposit transaction")
+        print(f"Customer {cid} [Teller {tid}]: asks for deposit transaction")
     sem_teller[cid].release()
 
     sem_customer[cid].acquire()
-    print(f"Customer {cid} [Teller {teller_id}]: leaves teller")
+    print(f"Customer {cid} [Teller {tid}]: leaves teller")
     print(f"Customer {cid} []: goes to door")
     print(f"Customer {cid} []: leaves the bank")
-
     sem_teller[cid].release()
+
     door_sem.release()
 
 def main():
