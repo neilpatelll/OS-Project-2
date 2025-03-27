@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import threading
 import random
 import time
@@ -28,7 +30,7 @@ transactions = []
 assigned_teller = [-1]*NUM_CUSTOMERS
 
 def random_sleep(ms_min, ms_max):
-    """Sleep for a random duration (ms)."""
+    """Sleep for a random duration (ms)"""
     ms = random.randint(ms_min, ms_max)
     time.sleep(ms / 1000.0)
 
@@ -106,7 +108,7 @@ def teller_thread(tid):
         print(f"Teller {tid} [Customer {cust_id}]: wait for customer to leave.")
         sem_customer[cust_id].release()
 
-        # Wait for the customer to confirm they're gone
+        # Wait for the customer to confirm that they are gone
         sem_teller[cust_id].acquire()
 
         # One more served
