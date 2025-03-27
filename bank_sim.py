@@ -6,6 +6,7 @@ from collections import deque
 NUM_TELLERS = 3
 NUM_CUSTOMERS = 50
 
+# Semaphores and locks
 door_sem = threading.Semaphore(2)
 safe_sem = threading.Semaphore(2)
 manager_sem = threading.Semaphore(1)
@@ -27,12 +28,14 @@ transactions = []
 assigned_teller = [-1]*NUM_CUSTOMERS
 
 def random_sleep(ms_min, ms_max):
+    """Sleep for a random duration (ms)."""
     ms = random.randint(ms_min, ms_max)
     time.sleep(ms / 1000.0)
 
 def teller_thread(tid):
     global tellers_ready_count, simulation_done, customers_served
 
+    # Teller is ready and waits for a customer
     print(f"Teller {tid} []: ready to serve")
     print(f"Teller {tid} []: waiting for a customer")
 
@@ -142,6 +145,7 @@ def customer_thread(cid):
         customer_queue.append(cid)
         queue_cv.notify()
 
+    # Wait for teller to pick this customer
     sem_customer[cid].acquire()
     tid = assigned_teller[cid]
     print(f"Customer {cid} []: selecting a teller.")
@@ -151,6 +155,7 @@ def customer_thread(cid):
     print(f"Customer {cid} [Teller {tid}] introduces itself")
     sem_teller[cid].release()
 
+    # Wait for teller to ask
     sem_customer[cid].acquire()
     if txn_type == "Withdraw":
         print(f"Customer {cid} [Teller {tid}]: asks for withdrawal transaction")
@@ -158,6 +163,7 @@ def customer_thread(cid):
         print(f"Customer {cid} [Teller {tid}]: asks for deposit transaction")
     sem_teller[cid].release()
 
+    # Wait for transaction to finish
     sem_customer[cid].acquire()
     print(f"Customer {cid} [Teller {tid}]: leaves teller")
     print(f"Customer {cid} []: goes to door")
@@ -169,29 +175,34 @@ def customer_thread(cid):
 def main():
     random.seed(42)
 
+    # Prepare semaphores
     for _ in range(NUM_CUSTOMERS):
         sem_teller.append(threading.Semaphore(0))
         sem_customer.append(threading.Semaphore(0))
         transactions.append("")
 
+    # Launch teller threads
     t_threads = []
     for t in range(NUM_TELLERS):
         th = threading.Thread(target=teller_thread, args=(t,))
         t_threads.append(th)
         th.start()
 
+    # Launch customer threads
     c_threads = []
     for c in range(NUM_CUSTOMERS):
         ch = threading.Thread(target=customer_thread, args=(c,))
         c_threads.append(ch)
         ch.start()
 
+    # Wait for customers
     for ch in c_threads:
         ch.join()
 
     with queue_cv:
         queue_cv.notify_all()
 
+    # Wait for tellers
     for th in t_threads:
         th.join()
 
