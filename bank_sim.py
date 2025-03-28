@@ -9,21 +9,24 @@ NUM_TELLERS = 3
 NUM_CUSTOMERS = 50
 
 # Semaphores and locks
-door_sem = threading.Semaphore(2)
-safe_sem = threading.Semaphore(2)
-manager_sem = threading.Semaphore(1)
-queue_lock = threading.Lock()
-queue_cv = threading.Condition(queue_lock)
+door_sem = threading.Semaphore(2)               # Max 2 customers inside at once
+safe_sem = threading.Semaphore(2)               # Max 2 tellers in safe
+manager_sem = threading.Semaphore(1)            # Only 1 teller can consult manager
+queue_lock = threading.Lock()                   # Protects the customer queue
+queue_cv = threading.Condition(queue_lock)      # Customer queue condition variable
 customer_queue = deque()
 
+# For tracking service completion
 served_lock = threading.Lock()
 customers_served = 0
 simulation_done = False
 
+# Teller readiness and bank opening
 tellers_ready_count = 0
 tellers_ready_lock = threading.Lock()
 bank_open_event = threading.Event()
 
+# Per-customer semaphores
 sem_teller = []
 sem_customer = []
 transactions = []

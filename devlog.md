@@ -212,3 +212,14 @@
 **Next Steps (Post-Submission Thoughts):**
 * Project completion for now.
 * Future enhancements could include thread flow visualization with timestamps or customer impatience simulation.
+
+**Final Notes (Post-Final Session Random Thoughts):**
+* Feels good seeing Customers and Tellers interacting like a real simulation.
+* Still can't believe how tricky semaphores can be when they're just off by one
+* Adding thread names made the whole thing so much easier to follow—never skipping that again.
+* Mutexes saved the day more than once.
+* Output kinda reads like a play: “Teller-2 serves Customer-5". pretty fun to watch.
+* Wish I had more time to add features like timeouts or stats.
+* Might revisit this later just to add some extras, like tracking wait time or doing a GUI.
+* For now, code runs clean, output makes sense, no deadlocks. That’s a win.
+* Submitting this and taking a break, my brain’s been in sort of thread land all week
